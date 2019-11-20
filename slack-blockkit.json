@@ -1,0 +1,47 @@
+{
+	"blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Hey team! A friendly reminder from Out of Office bot for next week (Monday, October 21 - Sunday, October 27):"
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*Israel Morales*\nOut of office from Friday, October 18th 2019 to Monday, October 21st 2019."
+			}
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*Israel Morales*\nOut of office from Friday, October 18th 2019 to Monday, October 21st 2019."
+			}
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "*Israel Morales*\nOut of office from Friday, October 18th 2019 to Monday, October 21st 2019."
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "For more info, contact <@hr>."
+				}
+			]
+		}
+	]
+}
