@@ -1,7 +1,7 @@
 {
-  "name": "chq-outofoffice-bot",
+  "name": "chq-bamboo-slack",
   "version": "0.0.1",
-  "description": "TK.",
+  "description": "Slack app to integrate with the BambooHR API.",
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js"
