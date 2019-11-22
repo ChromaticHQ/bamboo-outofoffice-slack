@@ -32,10 +32,8 @@ app.get('/', (request, response, next) => {
 });
 
 const whosOutPayloadBlocks = (response) => {
-  const blocks = [];
-
   // Team out of office data.
-  response.data.forEach(function(timeOffEntry) {
+  const blocks = response.data.map(function(timeOffEntry) {
     const timeOffStartDate = new Date(timeOffEntry.start);
     const timeOffEndDate = new Date(timeOffEntry.end);
     const dateOptions = {
@@ -45,18 +43,13 @@ const whosOutPayloadBlocks = (response) => {
       day: "numeric"
     };
 
-    blocks.push({
+    return {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*${
-          timeOffEntry.name
-        }*\nOut of office from _${timeOffStartDate.toLocaleDateString(
-          "en-US",
-          dateOptions
-        )}_ to _${timeOffEndDate.toLocaleDateString("en-US", dateOptions)}_.`
+        text: `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString("en-US", dateOptions)}_ to _${timeOffEndDate.toLocaleDateString("en-US", dateOptions)}_.`
       }
-    });
+    };
   });
 
   // Footer.
@@ -83,37 +76,40 @@ const bambooApiRequestConfiguration = {
   }
 };
 
+// This endpoint is hit when a slash command for this app is triggered in Slack.
 app.post('/commands', (request, response, next) => {
-  if (request.body.token === slackVerificationToken && request.body.command === '/outofoffice') {
-    axios
-      .get(bambooApiWhosOutUrl, bambooApiRequestConfiguration)
-      .then((response) => {
-        if (response.status === 200) {
-          payload = {
-            channel: request.body.channel_id,
-            user: request.body.user_id,
-            text: whosOutMessageText,
-            attachments: [
-              {
-                blocks: whosOutPayloadBlocks(response)
-              }
-            ]
-          };
-          return slackWebClient.chat.postEphemeral(payload);
-        }
-        return next();
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    response.status(200);
+  if (request.body.token !== slackVerificationToken || request.body.command !== '/outofoffice') {
+    response.status(403);
     return response.send();
   }
-  return next();
+  
+  axios
+    .get(bambooApiWhosOutUrl, bambooApiRequestConfiguration)
+    .then((response) => {
+      if (response.status === 200) {
+        const payload = {
+          channel: request.body.channel_id,
+          user: request.body.user_id,
+          text: whosOutMessageText,
+          attachments: [
+            {
+              blocks: whosOutPayloadBlocks(response)
+            }
+          ]
+        };
+        return slackWebClient.chat.postEphemeral(payload);
+      }
+      return next();
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  response.status(200);
+  return response.send();
 });
 
-// This function is to be triggered by a non-Slack event like a Jenkins job for a weekly notification.
-app.post('/outofoffice', (request, response, next) => {
+// This endpoint is triggered by a non-Slack event like a Jenkins job for a weekly notification.
+app.post('/triggers', (request, response, next) => {
   if (request.query.token !== chromaticToken) {
     response.status(403);
     return response.send();
