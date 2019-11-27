@@ -1,5 +1,7 @@
 // server.js
 
+const config = require('./config');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
@@ -7,23 +9,13 @@ const axios = require('axios');
 // Configure Slack web client.
 const { WebClient } = require('@slack/client');
 
-const slackWebClient = new WebClient(process.env.SLACK_TOKEN);
-const slackVerificationToken = process.env.SLACK_VERIFICATION_TOKEN;
-
-const chromaticToken = process.env.CHROMATIC_TOKEN;
+const slackWebClient = new WebClient(config.slackToken);
+const slackVerificationToken = config.slackVerificationToken;
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-const announcementsChannelId = 'C03FBG24G';
-const sandboxChannelId = 'D19NAUQE7';
-const debugMode = (process.env.DEBUG_MODE === 'true');
-
-const bambooApiWhosOutUrl = 'https://api.bamboohr.com/api/gateway.php/chromatichq/v1/time_off/whos_out/';
-
-const whosOutMessageText = 'Hey team! A friendly reminder on who is out for the next two weeks:';
 
 app.get('/', (request, response, next) => {
   response.send('<h2>The CHQ Out of Office app is running</h2> <p>Follow the' +
@@ -68,29 +60,21 @@ const whosOutPayloadBlocks = (response) => {
   return blocks;
 }
 
-const bambooApiRequestConfiguration = {
-  headers: {
-    authorization:
-      "Basic ODAwNjRmMTFkYjdmOGVhOTEwZGY1ZDk4MzFjYTQ3ZmQ3MjNlMWUzZTp4",
-    accept: "application/json"
-  }
-};
-
 // This endpoint is hit when a slash command for this app is triggered in Slack.
 app.post('/commands', (request, response, next) => {
   if (request.body.token !== slackVerificationToken || request.body.command !== '/outofoffice') {
     response.status(403);
     return response.send();
   }
-  
+
   axios
-    .get(bambooApiWhosOutUrl, bambooApiRequestConfiguration)
+    .get(config.bamboo.whosOutUrl, config.bamboo.apiRequestConfig)
     .then((response) => {
       if (response.status === 200) {
         const payload = {
           channel: request.body.channel_id,
           user: request.body.user_id,
-          text: whosOutMessageText,
+          text: config.whosOutMessageText,
           attachments: [
             {
               blocks: whosOutPayloadBlocks(response)
@@ -110,22 +94,22 @@ app.post('/commands', (request, response, next) => {
 
 // This endpoint is triggered by a non-Slack event like a Jenkins job for a weekly notification.
 app.post('/triggers', (request, response, next) => {
-  if (request.query.token !== chromaticToken) {
+  if (request.query.token !== config.chromaticToken) {
     response.status(403);
     return response.send();
   }
 
   // Allow overriding of #chromatic default with sandbox channel.
-  const channelId = debugMode ? sandboxChannelId : announcementsChannelId;
+  const channelId = config.debugMode ? config.channels.sandboxId : config.channels.announcementsId;
   console.log(channelId);
   
   axios
-    .get(bambooApiWhosOutUrl, bambooApiRequestConfiguration)
+    .get(config.bamboo.whosOutUrl, config.bamboo.apiRequestConfig)
     .then(response => {
       if (response.status === 200) {
         payload = {
-          channel: debugMode ? sandboxChannelId : announcementsChannelId,
-          text: whosOutMessageText,
+          channel: config.debugMode ? config.channels.sandboxId : config.channels.announcementsId,
+          text: config.whosOutMessageText,
           attachments: [
             {
               blocks: whosOutPayloadBlocks(response)
