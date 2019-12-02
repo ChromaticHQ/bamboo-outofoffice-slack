@@ -10,7 +10,6 @@ const axios = require('axios');
 const { WebClient } = require('@slack/client');
 
 const slackWebClient = new WebClient(config.slackToken);
-const slackVerificationToken = config.slackVerificationToken;
 
 const app = express();
 
@@ -28,18 +27,12 @@ const whosOutPayloadBlocks = (response) => {
   const blocks = response.data.map(function(timeOffEntry) {
     const timeOffStartDate = new Date(timeOffEntry.start);
     const timeOffEndDate = new Date(timeOffEntry.end);
-    const dateOptions = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    };
 
     return {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString("en-US", dateOptions)}_ to _${timeOffEndDate.toLocaleDateString("en-US", dateOptions)}_.`
+        text: `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString("en-US", config.dateFormatOptions)}_ to _${timeOffEndDate.toLocaleDateString("en-US", config.dateFormatOptions)}_.`
       }
     };
   });
@@ -62,7 +55,7 @@ const whosOutPayloadBlocks = (response) => {
 
 // This endpoint is hit when a slash command for this app is triggered in Slack.
 app.post('/commands', (request, response, next) => {
-  if (request.body.token !== slackVerificationToken || request.body.command !== '/outofoffice') {
+  if (request.body.token !== config.slackVerificationToken || request.body.command !== '/outofoffice') {
     response.status(403);
     return response.send();
   }
