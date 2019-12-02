@@ -8,7 +8,6 @@ const axios = require('axios');
 
 // Configure Slack web client.
 const { WebClient } = require('@slack/client');
-
 const slackWebClient = new WebClient(config.slackToken);
 
 const app = express();
