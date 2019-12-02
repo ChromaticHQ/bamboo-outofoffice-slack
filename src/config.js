@@ -4,15 +4,15 @@ module.exports = {
   slackVerificationToken: process.env.SLACK_VERIFICATION_TOKEN,
   chromaticToken: process.env.CHROMATIC_TOKEN,
   channels: {
-    announcementsId: "C03FBG24G",
-    sandboxId: "D19NAUQE7"
+    announcementsId: 'C03FBG24G',
+    sandboxId: 'D19NAUQE7'
   },
   whosOutMessageText: 'Hey team! A friendly reminder on who is out for the next two weeks:',
   dateFormatOptions: {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric"
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   },
   bamboo: {
     whosOutUrl: 'https://api.bamboohr.com/api/gateway.php/chromatichq/v1/time_off/whos_out/',
