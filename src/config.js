@@ -7,7 +7,7 @@ module.exports = {
     announcementsId: 'C03FBG24G',
     sandboxId: 'D19NAUQE7'
   },
-  whosOutMessageText: 'Hey team! A friendly reminder on who is out for the next two weeks:',
+  whosOutMessageText: 'Hey team! A friendly reminder on who is out for the next two weeks and upcoming holidays:',
   dateFormatOptions: {
     weekday: 'long',
     year: 'numeric',
@@ -15,7 +15,7 @@ module.exports = {
     day: 'numeric'
   },
   bamboo: {
-    whosOutUrl: 'https://api.bamboohr.com/api/gateway.php/chromatichq/v1/time_off/whos_out/',
+    whosOutUrl: 'https://api.bamboohr.com/api/gateway.php/chromatic/v1/time_off/whos_out/',
     apiRequestConfig: {
       headers: {
         authorization: 'Basic ODAwNjRmMTFkYjdmOGVhOTEwZGY1ZDk4MzFjYTQ3ZmQ3MjNlMWUzZTp4',

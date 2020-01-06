@@ -26,7 +26,17 @@ const whosOutPayloadBlocks = (response) => {
   const blocks = response.data.map(function(timeOffEntry) {
     const timeOffStartDate = new Date(timeOffEntry.start);
     const timeOffEndDate = new Date(timeOffEntry.end);
-
+    
+    if (timeOffEntry.type == 'holiday') {
+      return {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*_Holiday:_ ${timeOffEntry.name}*\nChromatic holiday on _${timeOffStartDate.toLocaleDateString("en-US", config.dateFormatOptions)}_.`
+        }  
+      };
+    }
+    
     return {
       type: "section",
       text: {
@@ -62,6 +72,7 @@ app.post('/commands', (request, response, next) => {
   axios
     .get(config.bamboo.whosOutUrl, config.bamboo.apiRequestConfig)
     .then((response) => {
+      console.log(response);
       if (response.status === 200) {
         const payload = {
           channel: request.body.channel_id,
