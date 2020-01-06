@@ -72,7 +72,6 @@ app.post('/commands', (request, response, next) => {
   axios
     .get(config.bamboo.whosOutUrl, config.bamboo.apiRequestConfig)
     .then((response) => {
-      console.log(response);
       if (response.status === 200) {
         const payload = {
           channel: request.body.channel_id,
