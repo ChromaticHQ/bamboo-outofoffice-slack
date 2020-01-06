@@ -27,23 +27,20 @@ const whosOutPayloadBlocks = (response) => {
     const timeOffStartDate = new Date(timeOffEntry.start);
     const timeOffEndDate = new Date(timeOffEntry.end);
     
-    if (timeOffEntry.type == 'holiday') {
-      return {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*_Holiday:_ ${timeOffEntry.name}*\nChromatic holiday on _${timeOffStartDate.toLocaleDateString("en-US", config.dateFormatOptions)}_.`
-        }  
-      };
-    }
-    
-    return {
+    const payloadBlock = {
       type: "section",
       text: {
-        type: "mrkdwn",
-        text: `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString("en-US", config.dateFormatOptions)}_ to _${timeOffEndDate.toLocaleDateString("en-US", config.dateFormatOptions)}_.`
+        type: "mrkdwn"
       }
     };
+
+    if (timeOffEntry.type == "holiday") {
+      payloadBlock.text.text = `*_Holiday:_ ${timeOffEntry.name}*\nChromatic holiday on _${timeOffStartDate.toLocaleDateString("en-US", config.dateFormatOptions)}_.`;
+    } else {
+      payloadBlock.text.text = `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString("en-US", config.dateFormatOptions)}_ to _${timeOffEndDate.toLocaleDateString("en-US", config.dateFormatOptions)}_.`;
+    }
+
+    return payloadBlock;
   });
 
   // Footer.
