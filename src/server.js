@@ -91,23 +91,27 @@ app.post('/commands', (request, response, next) => {
   return response.send();
 });
 
-// This endpoint is triggered by a non-Slack event like a Jenkins job for a weekly notification.
+// This endpoint is triggered by a non-Slack event like a Jenkins job for a 
+// weekly notification in the configured announcements channel.
 app.post('/triggers', (request, response, next) => {
   if (request.query.token !== config.chromaticToken) {
     response.status(403);
     return response.send();
   }
 
-  // Allow overriding of #chromatic default with sandbox channel.
-  const channelId = config.debugMode ? config.channels.sandboxId : config.channels.announcementsId;
-  console.log(channelId);
+  
   
   axios
     .get(config.bamboo.whosOutUrl, config.bamboo.apiRequestConfig)
     .then(response => {
       if (response.status === 200) {
+        // Allow overriding of #chromatic default with sandbox channel.
+        const channelId = config.debugMode ? config.channels.sandboxId : config.channels.announcementsId;
+        console.log(`Debug mode: ${config.debugMode ? 'ON' : 'OFF'}`);
+        console.log(`Sending notification to channel: ${channelId}`);
+        
         payload = {
-          channel: config.debugMode ? config.channels.sandboxId : config.channels.announcementsId,
+          channel: channelId,
           text: config.whosOutMessageText,
           attachments: [
             {
