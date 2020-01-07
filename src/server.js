@@ -98,8 +98,6 @@ app.post('/triggers', (request, response, next) => {
     response.status(403);
     return response.send();
   }
-
-  
   
   axios
     .get(config.bamboo.whosOutUrl, config.bamboo.apiRequestConfig)
