@@ -26,26 +26,33 @@ const whosOutPayloadBlocks = (response) => {
   const blocks = response.data.map(function(timeOffEntry) {
     const timeOffStartDate = new Date(timeOffEntry.start);
     const timeOffEndDate = new Date(timeOffEntry.end);
-
-    return {
-      type: "section",
+    
+    const payloadBlock = {
+      type: 'section',
       text: {
-        type: "mrkdwn",
-        text: `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString("en-US", config.dateFormatOptions)}_ to _${timeOffEndDate.toLocaleDateString("en-US", config.dateFormatOptions)}_.`
+        type: 'mrkdwn'
       }
     };
+
+    if (timeOffEntry.type == 'holiday') {
+      payloadBlock.text.text = `*_Holiday:_ ${timeOffEntry.name}*\nChromatic holiday on _${timeOffStartDate.toLocaleDateString('en-US', config.dateFormatOptions)}_.`;
+    } else {
+      payloadBlock.text.text = `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString('en-US', config.dateFormatOptions)}_ to _${timeOffEndDate.toLocaleDateString('en-US', config.dateFormatOptions)}_.`;
+    }
+
+    return payloadBlock;
   });
 
   // Footer.
   blocks.push({
-    type: "divider"
+    type: 'divider'
   });
   blocks.push({
-    type: "context",
+    type: 'context',
     elements: [
       {
-        type: "mrkdwn",
-        text: "For more info, contact <@hr>."
+        type: 'mrkdwn',
+        text: 'For more info, contact <@hr>.'
       }
     ]
   });
