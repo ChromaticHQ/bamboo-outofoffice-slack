@@ -5,7 +5,7 @@ module.exports = {
   chromaticToken: process.env.CHROMATIC_TOKEN,
   channels: {
     announcementsId: 'C03FBG24G',
-    sandboxId: 'D19NAUQE7'
+    sandboxId: process.env.SANDBOX_CHANNEL_ID
   },
   whosOutMessageText: 'Hey team! A friendly reminder on who is out for the next two weeks and upcoming holidays:',
   dateFormatOptions: {
