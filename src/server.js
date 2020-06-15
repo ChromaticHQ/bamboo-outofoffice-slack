@@ -24,6 +24,8 @@ app.get('/', (request, response, next) => {
 const whosOutPayloadBlocks = (response) => {
   // Team out of office data.
   const blocks = response.data.map(function(timeOffEntry) {
+    // Create new Date objects from each of the entry’s dates, and produce a
+    // locale string for each.
     const timeOffStart = new Date(timeOffEntry.start)
       .toLocaleDateString('en-US', config.dateFormatOptions);
     const timeOffEnd = new Date(timeOffEntry.end)
