@@ -23,6 +23,7 @@ app.get('/', (request, response, next) => {
 
 const whosOutPayloadBlocks = (response) => {
   // Team out of office data.
+  console.log(response.data);
   const blocks = response.data.map(function(timeOffEntry) {
     const timeOffStartDate = new Date(timeOffEntry.start);
     const timeOffEndDate = new Date(timeOffEntry.end);
