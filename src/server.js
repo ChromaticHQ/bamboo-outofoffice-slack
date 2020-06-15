@@ -24,9 +24,11 @@ app.get('/', (request, response, next) => {
 const whosOutPayloadBlocks = (response) => {
   // Team out of office data.
   const blocks = response.data.map(function(timeOffEntry) {
-    const timeOffStartDate = new Date(timeOffEntry.start);
-    const timeOffEndDate = new Date(timeOffEntry.end);
-    
+    const timeOffStart = new Date(timeOffEntry.start)
+      .toLocaleDateString('en-US', config.dateFormatOptions);
+    const timeOffEnd = new Date(timeOffEntry.end)
+      .toLocaleDateString('en-US', config.dateFormatOptions);
+
     const payloadBlock = {
       type: 'section',
       text: {
@@ -35,9 +37,11 @@ const whosOutPayloadBlocks = (response) => {
     };
 
     if (timeOffEntry.type == 'holiday') {
-      payloadBlock.text.text = `*_Holiday:_ ${timeOffEntry.name}*\nChromatic holiday on _${timeOffStartDate.toLocaleDateString('en-US', config.dateFormatOptions)}_.`;
+      payloadBlock.text.text = `*_Holiday:_ ${timeOffEntry.name}*\nChromatic holiday on _${timeOffStart}_.`;
+    } else if (timeOffStart === timeOffEnd) {
+      payloadBlock.text.text = `*${timeOffEntry.name}*\nOut of office on _${timeOffStart}_.`;
     } else {
-      payloadBlock.text.text = `*${timeOffEntry.name}*\nOut of office from _${timeOffStartDate.toLocaleDateString('en-US', config.dateFormatOptions)}_ to _${timeOffEndDate.toLocaleDateString('en-US', config.dateFormatOptions)}_.`;
+      payloadBlock.text.text = `*${timeOffEntry.name}*\nOut of office from _${timeOffStart}_ to _${timeOffEnd}_.`;
     }
 
     return payloadBlock;
