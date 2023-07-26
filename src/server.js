@@ -45,7 +45,6 @@ const whosOutPayloadBlocks = (response) => {
     } else {
       payloadBlock.text.text = `*${timeOffEntry.name}*\nOut of office from _${timeOffStart}_ to _${timeOffEnd}_.`;
     }
-
     return payloadBlock;
   });
 
