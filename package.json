@@ -1,6 +1,6 @@
 {
   "name": "chq-bamboo-slack",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "Slack app to integrate with the BambooHR API.",
   "main": "server.js",
   "scripts": {
@@ -10,11 +10,10 @@
     "axios": "^0.18.0",
     "axios-debug-log": "^0.4.0",
     "body-parser": "^1.18.3",
-    "express": "^4.16.3",
-    "@slack/client": "^4.3.1"
+    "@slack/bolt": "^3.13.2"
   },
   "engines": {
-    "node": "8.x"
+    "node": "16.x"
   },
   "repository": {
     "url": "https://glitch.com/edit/#!/chq-outofoffice-bot"

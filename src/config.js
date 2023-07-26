@@ -1,7 +1,8 @@
 module.exports = {
   debugMode: process.env.DEBUG_MODE === 'true',
-  slackToken: process.env.SLACK_TOKEN,
+  slackBotToken: process.env.SLACK_BOT_TOKEN,
   slackVerificationToken: process.env.SLACK_VERIFICATION_TOKEN,
+  slackSigningSecret: process.env.SLACK_SIGNING_SECRET,
   chromaticToken: process.env.CHROMATIC_TOKEN,
   channels: {
     announcementsId: 'C03FBG24G',
