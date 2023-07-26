@@ -2,23 +2,17 @@
 
 const config = require('./config');
 
-const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-
-// Configure Slack web client.
-const { WebClient } = require('@slack/client');
-const slackWebClient = new WebClient(config.slackToken);
-
-const app = express();
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.get('/', (request, response, next) => {
-  response.send('<h2>The CHQ Out of Office app is running</h2> <p>Follow the' +
-  ' instructions in the README to configure the Slack App and your' +
-  ' environment variables.</p>');
+const { App, LogLevel, ExpressReceiver } = require('@slack/bolt');
+const receiver = new ExpressReceiver({
+  signingSecret: config.slackSigningSecret,
+});
+const app = new App({
+  receiver,
+  token: config.slackBotToken,
+  signingSecret: config.slackSigningSecret,
+  logLevel: LogLevel.DEBUG,
 });
 
 const whosOutPayloadBlocks = (response) => {
@@ -65,10 +59,12 @@ const whosOutPayloadBlocks = (response) => {
 }
 
 // This endpoint is hit when a slash command for this app is triggered in Slack.
-app.post('/commands', (request, response, next) => {
-  if (request.body.token !== config.slackVerificationToken || request.body.command !== '/outofoffice') {
-    response.status(403);
-    return response.send();
+app.command('/outofoffice', async ({ command, ack, respond }) => {
+  // Acknowledge Slack command request.
+  await ack();
+  
+  if (config.debugMode) {
+    console.log(command);
   }
 
   axios
@@ -76,8 +72,8 @@ app.post('/commands', (request, response, next) => {
     .then((response) => {
       if (response.status === 200) {
         const payload = {
-          channel: request.body.channel_id,
-          user: request.body.user_id,
+          channel: command.channel_id,
+          user: command.user_id,
           text: config.whosOutMessageText,
           attachments: [
             {
@@ -85,20 +81,18 @@ app.post('/commands', (request, response, next) => {
             }
           ]
         };
-        return slackWebClient.chat.postEphemeral(payload);
+        return respond(payload);
       }
       return next();
     })
     .catch((error) => {
       console.error(error);
     });
-  response.status(200);
-  return response.send();
 });
 
-// This endpoint is triggered by a non-Slack event like a Jenkins job for a 
-// weekly notification in the configured announcements channel.
-app.post('/triggers', (request, response, next) => {
+// This endpoint is triggered by a non-Slack event like a GitHub Actions
+// workflow for a weekly notification in the configured announcements channel.
+receiver.app.post('/triggers', (request, response, next) => {
   if (request.query.token !== config.chromaticToken) {
     response.status(403);
     return response.send();
@@ -122,7 +116,7 @@ app.post('/triggers', (request, response, next) => {
             }
           ]
         };
-        return slackWebClient.chat.postMessage(payload);
+        return app.client.chat.postMessage(payload);
       }
       return next();
     })
@@ -133,7 +127,14 @@ app.post('/triggers', (request, response, next) => {
   return response.send();
 });
 
-// Listen for requests.
-const listener = app.listen(process.env.PORT, () => {
-  console.log(`Your app is listening on port ${listener.address().port}`);
+receiver.app.get('/', (_, res) => {
+  // Respond 200 OK to the default health check method.
+  res.status(200).send();
 });
+
+(async () => {
+  // Start the app
+  await app.start(process.env.PORT || 3000);
+
+  console.log('⚡️ Bolt app is running!');
+})();
