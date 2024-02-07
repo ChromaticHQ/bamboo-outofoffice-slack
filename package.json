@@ -1,7 +1,11 @@
 {
-  "name": "chq-bamboo-slack",
+  "name": "bamboo-outofoffice-slack",
   "version": "2.0.0",
-  "description": "Slack app to integrate with the BambooHR API.",
+  "description": "A Slack app for users of BambooHR to share who is going to be out of the office.",
+  "author": {
+    "name": "Mark Dorison",
+    "email": "mark@chromatichq.com"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js"
