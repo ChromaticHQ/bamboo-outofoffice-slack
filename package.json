@@ -11,10 +11,10 @@
     "start": "node src/server.js"
   },
   "dependencies": {
-    "axios": "^1.4.0",
+    "axios": "^1.6.7",
     "axios-debug-log": "^1.0.0",
     "body-parser": "^1.20.2",
-    "@slack/bolt": "^3.13.2"
+    "@slack/bolt": "^3.17.1"
   },
   "engines": {
     "node": "16.x"

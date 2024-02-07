@@ -18,6 +18,9 @@ const app = new App({
 const whosOutPayloadBlocks = (response) => {
   // Team out of office data.
   const blocks = response.data.map(function(timeOffEntry) {
+    if (config.debugMode) {
+      console.log(timeOffEntry);
+    }
     // Create new Date objects from each of the entry’s dates, and produce a
     // locale string for each.
     const timeOffStart = new Date(timeOffEntry.start)
@@ -33,7 +36,7 @@ const whosOutPayloadBlocks = (response) => {
     };
 
     if (timeOffEntry.type == 'holiday') {
-      payloadBlock.text.text = `*_Holiday:_ ${timeOffEntry.name}*\nChromatic holiday on _${timeOffStart}_.`;
+      payloadBlock.text.text = `*_Holiday:_ ${timeOffEntry.name}*\n${config.orgName} holiday on _${timeOffStart}_.`;
     } else if (timeOffStart === timeOffEnd) {
       payloadBlock.text.text = `*${timeOffEntry.name}*\nOut of office on _${timeOffStart}_.`;
     } else {
@@ -62,7 +65,7 @@ const whosOutPayloadBlocks = (response) => {
 app.command('/outofoffice', async ({ command, ack, respond }) => {
   // Acknowledge Slack command request.
   await ack();
-  
+
   if (config.debugMode) {
     console.log(command);
   }
@@ -93,20 +96,20 @@ app.command('/outofoffice', async ({ command, ack, respond }) => {
 // This endpoint is triggered by a non-Slack event like a GitHub Actions
 // workflow for a weekly notification in the configured announcements channel.
 receiver.app.post('/triggers', (request, response, next) => {
-  if (request.query.token !== config.chromaticToken) {
+  if (request.query.token !== config.bambooAPIToken) {
     response.status(403);
     return response.send();
   }
-  
+
   axios
     .get(config.bamboo.whosOutUrl, config.bamboo.apiRequestConfig)
     .then(response => {
       if (response.status === 200) {
-        // Allow overriding of #chromatic default with sandbox channel.
+        // Allow overriding of announcements channel with sandbox channel.
         const channelId = config.debugMode ? config.channels.sandboxId : config.channels.announcementsId;
         console.log(`Debug mode: ${config.debugMode ? 'ON' : 'OFF'}`);
         console.log(`Sending notification to channel: ${channelId}`);
-        
+
         payload = {
           channel: channelId,
           text: config.whosOutMessageText,
