@@ -2,6 +2,8 @@
 
 A Slack app for users of BambooHR to share who is going to be out of the office. Supports PTO and holidays.
 
+![CleanShot 2024-02-07 at 10 41 05@2x](https://github.com/ChromaticHQ/bamboo-outofoffice-slack/assets/20355/ecdfb481-0503-40d7-8934-eea00adbbead)
+
 See [.env.sample](.env.sample) for required environment variables.
 
 ## Getting Started
